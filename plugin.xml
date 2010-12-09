@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IContainer"
+            id="com.slantsoft.plugin.mura.contributionContainerMenu">
+         <menu
+               icon="src/com/muratools/eclipse/icon/mura-icon.gif"
+               id="com.slantsoft.plugin.mura.menu1"
+               label="Mura CMS"
+               path="additions">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               class="com.muratools.eclipse.popup.actions.BuildMuraPlugin"
+               icon="src/com/muratools/eclipse/icon/C_ExportReleaseVersion_md.png"
+               id="com.slantsoft.plugin.mura.buildPlugin"
+               label="Build Plugin"
+               menubarPath="com.slantsoft.plugin.mura.menu1/group1"
+               tooltip="Build the Mura plugin and package it into a zip file">
+         </action>
+         <action
+               class="com.muratools.eclipse.popup.actions.NewMuraPlugin"
+               icon="src/com/muratools/eclipse/icon/wordpress-plugin.png"
+               id="com.slantsoft.plugin.mura.newPlugin"
+               label="New Plugin"
+               menubarPath="com.slantsoft.plugin.mura.menu1/group1"
+               tooltip="Create scaffolding for a new Mura plugin">
+         </action>
+         <action
+               class="com.muratools.eclipse.popup.actions.InstallMura"
+               icon="src/com/muratools/eclipse/icon/new-icon.png"
+               id="com.slantsoft.plugin.mura.newInstall"
+               label="New Mura Install"
+               menubarPath="com.slantsoft.plugin.mura.menu1/group1"
+               tooltip="Deploy a new Mura CMS installation">
+         </action>
+      </objectContribution>
+   </extension>
+</plugin>
