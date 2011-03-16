@@ -8,11 +8,12 @@ How to Contribute
 
 You can contribute to the project through the following methods
 
-* Source Code
-** [Contact Us](http://muratools.com/contact/) and fill out a contributor agreement
-** [Fork](https://github.com/MuraTools/Mura-Tools-for-Eclipse-Core#fork_box) the project and submit patches back to us
-* Documentation
-** Help us with docs by editing the [wiki](http://wiki.slantsoft.com/display/MT/Home) -- You'll need to [Contact Us](http://muratools.com/contact/) to get contributor access.
+Source Code
+* [Contact Us](http://muratools.com/contact/) and fill out a contributor agreement
+* [Fork](https://github.com/MuraTools/Mura-Tools-for-Eclipse-Core#fork_box) the project and submit patches back to us
+
+Documentation
+* Help us with docs by editing the [wiki](http://wiki.slantsoft.com/display/MT/Home) -- You'll need to [Contact Us](http://muratools.com/contact/) to get contributor access.
 
 License
 -------
