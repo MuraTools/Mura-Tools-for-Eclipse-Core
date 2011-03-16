@@ -1,22 +1,20 @@
-Mura Tools for Eclipse
-======================
+# Mura Tools for Eclipse
+
 
 This is the official source repository for the Eclipse plugin Mura Tools.
 
-How to Contribute
------------------
+## How to Contribute
 
 You can contribute to the project through the following methods
 
-Source Code
-* [Contact Us](http://muratools.com/contact/) and fill out a contributor agreement
-* [Fork](https://github.com/MuraTools/Mura-Tools-for-Eclipse-Core#fork_box) the project and submit patches back to us
+### Source Code
+- [Contact Us](http://muratools.com/contact/) and fill out a contributor agreement
+- [Fork](https://github.com/MuraTools/Mura-Tools-for-Eclipse-Core#fork_box) the project and submit patches back to us
 
-Documentation
+### Documentation
 * Help us with docs by editing the [wiki](http://wiki.slantsoft.com/display/MT/Home) -- You'll need to [Contact Us](http://muratools.com/contact/) to get contributor access.
 
-License
--------
+## License
 
 Mura Tools is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
 
