@@ -16,7 +16,7 @@ You can contribute to the project through the following methods
 
 ## License
 
-Mura Tools is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
+### Mura Tools is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 Copyright 2011 Steve Good [steve@stevegood.org]
 
