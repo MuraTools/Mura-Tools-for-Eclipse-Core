@@ -54,11 +54,7 @@ public class BuildMuraPlugin extends MuraToolsAction {
 			return false;
 		}
 		
-		if (new File(getTargetDirectory() + "/plugin/config.cfm").exists() == false){
-			return false;
-		}
-		
-		if (new File(getTargetDirectory() + "/plugin/config.xml").exists() == false){
+		if (new File(getTargetDirectory() + "/plugin/config.xml").exists() == false && new File(getTargetDirectory() + "/plugin/config.xml.cfm").exists() == false){
 			return false;
 		}
 		
