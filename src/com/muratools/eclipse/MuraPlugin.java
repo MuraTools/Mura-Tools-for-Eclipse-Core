@@ -69,6 +69,9 @@ public class MuraPlugin {
 		PluginConfig config = getConfig();
 		try {
 			File pluginXMLFile = new File(getTargetDirectory());
+			if (!pluginXMLFile.exists()){
+				pluginXMLFile = new File(getTargetDirectory() + ".cfm");
+			}
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(pluginXMLFile);
@@ -182,7 +185,7 @@ public class MuraPlugin {
 		sb.append(getDisplayObjectsBuffer()); // Display Objects XML
 		sb.append("\n</plugin>");
 		
-		writeToFile("config.xml", targetDirectory + "/plugin", sb);
+		writeToFile(new File(targetDirectory + "/plugin/config.xml").exists() ? "config.xml" : "config.xml.cfm", targetDirectory + "/plugin", sb);
 	}
 	
 	public void saveConfigXML(PluginConfig config){
