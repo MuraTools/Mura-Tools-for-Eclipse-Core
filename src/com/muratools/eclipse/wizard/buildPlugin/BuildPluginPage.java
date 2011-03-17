@@ -42,6 +42,7 @@ public class BuildPluginPage extends WizardPage {
 	private String containerPath = "";
 	private String version;
 	private String targetDirectory;
+	private Text buildNumberText;
 	
 	/**
 	 * @param selection
@@ -61,7 +62,7 @@ public class BuildPluginPage extends WizardPage {
 		
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
-		layout.numColumns = 3;
+		layout.numColumns = 4;
 		layout.verticalSpacing = 9;
 		
 		Label label = new Label(composite, SWT.NULL);
@@ -69,6 +70,7 @@ public class BuildPluginPage extends WizardPage {
 		
 		containerText = new Text(composite, SWT.BORDER | SWT.SINGLE);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.horizontalSpan = 2;
 		containerText.setLayoutData(gd);
 		containerText.addModifyListener(new ModifyListener() {	
 			public void modifyText(ModifyEvent e) {
@@ -95,7 +97,7 @@ public class BuildPluginPage extends WizardPage {
 		fileText = new Text(composite, SWT.BORDER | SWT.SINGLE);
 		
 		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
+		gd.horizontalSpan = 3;
 		fileText.setLayoutData(gd);
 		fileText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -104,9 +106,34 @@ public class BuildPluginPage extends WizardPage {
 			}
 		});
 		
+		new Label(composite, SWT.NONE);
+		
+		buildNumberText = new Text(composite, SWT.BORDER);
+		buildNumberText.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+		
+		Label lblNewLabel = new Label(composite, SWT.NONE);
+		lblNewLabel.setText("Build Number");
+		
+		Button btnRefreshBuildNumber = new Button(composite, SWT.NONE);
+		btnRefreshBuildNumber.setText("Refresh");
+		btnRefreshBuildNumber.addSelectionListener(new SelectionListener() {
+			
+			public void widgetSelected(SelectionEvent arg0) {
+				refreshBuildNumber();
+				
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				refreshBuildNumber();
+				
+			}
+		});		
+		
+		// These always need to be called last
 		initialize();
 		dialogChanged();
 		setControl(composite);
+		// Nothing should go below these
 	}
 	
 	private void dialogChanged(){
@@ -135,7 +162,7 @@ public class BuildPluginPage extends WizardPage {
 	
 	private void initialize(){
 		containerText.setText(getTargetDirectory());
-		
+		buildNumberText.setText(getVersion());
 		fileText.setText(getFileName() + "-" + getVersion() + ".zip");
 		
 		setFileName(fileText.getText());
@@ -145,6 +172,11 @@ public class BuildPluginPage extends WizardPage {
 	private void updateStatus(String message){
 		setErrorMessage(message);
 		setPageComplete(message == null);
+	}
+	
+	private void refreshBuildNumber(){
+		fileText.setText(getFileName().replaceAll(getVersion(), buildNumberText.getText()));
+		setVersion(buildNumberText.getText());
 	}
 	
 	private void setContainerPath(String containerPath){

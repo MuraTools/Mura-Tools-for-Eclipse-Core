@@ -51,6 +51,8 @@ public class BuildPluginWizard extends MuraToolsWizard {
 	public boolean performFinish() {
 		ZipUtil zip = new ZipUtil(getTargetDirectory());
 		plugin.setTargetDirectory(getTargetDirectory());
+		// set the build number equal to the value of the build number from the BuildPluginPage
+		getConfig().setVersion(page.getVersion());
 		plugin.saveConfigXML(getConfig());
 		try {
 			ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(page.getContainerPath() + "/" + page.getFileName()));
