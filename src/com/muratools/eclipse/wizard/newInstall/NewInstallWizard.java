@@ -39,11 +39,14 @@ import com.muratools.eclipse.MuraToolsWizard;
 public class NewInstallWizard extends MuraToolsWizard {
 	
 	private InstallMuraPage page;
+	private InstallMuraSettingsPage settingsPage;
 	private String zipLocation = System.getProperty("java.io.tmpdir") + "/mura-latest.zip";
 	
 	public void addPages(){
 		page = new InstallMuraPage(getSelection());
 		addPage(page);
+		settingsPage = new InstallMuraSettingsPage(getSelection());
+		addPage(settingsPage);
 	}
 	
 	@Override
