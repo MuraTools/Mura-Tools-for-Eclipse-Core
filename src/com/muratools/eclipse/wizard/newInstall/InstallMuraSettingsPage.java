@@ -35,6 +35,10 @@ public class InstallMuraSettingsPage extends WizardPage {
 	public Text textMailUsername;
 	public Text textMailPassword;
 	public Combo comboDatasourceType;
+	public Spinner spinnerMailSMTPPort;
+	public Spinner spinnerMailPOPPort;
+	public Button btnUseTls;
+	public Button btnUseSsl;
 	
 	private Button btnRequiresCredentials;
 	private Label lblDatasourceUsername;
@@ -187,7 +191,7 @@ public class InstallMuraSettingsPage extends WizardPage {
 		lblSmtpPort.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblSmtpPort.setText("SMTP Port");
 		
-		Spinner spinnerMailSMTPPort = new Spinner(compositeMail, SWT.BORDER);
+		spinnerMailSMTPPort = new Spinner(compositeMail, SWT.BORDER);
 		spinnerMailSMTPPort.setMaximum(99999);
 		spinnerMailSMTPPort.setMinimum(1);
 		spinnerMailSMTPPort.setSelection(25);
@@ -198,18 +202,18 @@ public class InstallMuraSettingsPage extends WizardPage {
 		lblPopPort.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblPopPort.setText("POP Port");
 		
-		Spinner spinnerMailPOPPort = new Spinner(compositeMail, SWT.BORDER);
+		spinnerMailPOPPort = new Spinner(compositeMail, SWT.BORDER);
 		spinnerMailPOPPort.setMaximum(999999);
 		spinnerMailPOPPort.setMinimum(1);
 		spinnerMailPOPPort.setSelection(110);
 		spinnerMailPOPPort.setPageIncrement(1);
 		new Label(compositeMail, SWT.NONE);
 		
-		Button btnUseTls = new Button(compositeMail, SWT.CHECK);
+		btnUseTls = new Button(compositeMail, SWT.CHECK);
 		btnUseTls.setText("Use TLS");
 		new Label(compositeMail, SWT.NONE);
 		
-		Button btnUseSsl = new Button(compositeMail, SWT.CHECK);
+		btnUseSsl = new Button(compositeMail, SWT.CHECK);
 		btnUseSsl.setText("Use SSL");
 		
 		TabItem tbtmAdvanced = new TabItem(tabFolder, SWT.NONE);
