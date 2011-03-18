@@ -6,6 +6,8 @@ package com.muratools.eclipse.wizard.newInstall;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -30,6 +32,13 @@ public class InstallMuraSettingsPage extends WizardPage {
 	public Text textMailPassword;
 	public Text textMailSMTPPort;
 	public Text textMailPOPPort;
+	public Combo comboDatasourceType;
+	public Button btnUseTls;
+	public Button btnUseSsl;
+	
+	private Button btnDatasourceRequiresCredentials;
+	private Label lblUsername;
+	private Label lblPassword;
 	
 	protected InstallMuraSettingsPage(ISelection selection){
 		super("New Mura CMS Install");
@@ -44,6 +53,7 @@ public class InstallMuraSettingsPage extends WizardPage {
 		Composite composite = new Composite(parent, SWT.NULL);
 		composite.setLayout(new FillLayout(SWT.VERTICAL));
 		
+		// Datasource inputs
 		Group grpDatasource = new Group(composite, SWT.NONE);
 		grpDatasource.setText("Datasource");
 		grpDatasource.setLayout(new GridLayout(3, false));
@@ -59,17 +69,40 @@ public class InstallMuraSettingsPage extends WizardPage {
 		lblType.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblType.setText("Type");
 		
-		Combo comboDatasourceType = new Combo(grpDatasource, SWT.READ_ONLY);
+		comboDatasourceType = new Combo(grpDatasource, SWT.READ_ONLY);
 		comboDatasourceType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		comboDatasourceType.setItems(new String [] {"MSSQL","MySQL","Oracle","H2"});
 		new Label(grpDatasource, SWT.NONE);
 		
-		Button btnDatasourceRequiresCredentials = new Button(grpDatasource, SWT.CHECK);
+		btnDatasourceRequiresCredentials = new Button(grpDatasource, SWT.CHECK);
 		btnDatasourceRequiresCredentials.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		btnDatasourceRequiresCredentials.setText("Datasource requires credentials");
+		btnDatasourceRequiresCredentials.addSelectionListener(new SelectionListener() {
+			
+			public void widgetSelected(SelectionEvent e) {
+				enableDisableDatasourceCredentialFields();
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				enableDisableDatasourceCredentialFields();
+			}
+			
+			private void enableDisableDatasourceCredentialFields(){
+				boolean enabled = btnDatasourceRequiresCredentials.getSelection();
+				textDatasourceUsername.setEnabled(enabled);
+				textDatasourcePassword.setEnabled(enabled);
+				lblUsername.setEnabled(enabled);
+				lblPassword.setEnabled(enabled);
+				
+				if (!enabled){
+					textDatasourceUsername.setText("");
+					textDatasourcePassword.setText("");
+				}
+			}
+		});
 		new Label(grpDatasource, SWT.NONE);
 		
-		Label lblUsername = new Label(grpDatasource, SWT.NONE);
+		lblUsername = new Label(grpDatasource, SWT.NONE);
 		lblUsername.setEnabled(false);
 		lblUsername.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblUsername.setText("Username");
@@ -79,7 +112,7 @@ public class InstallMuraSettingsPage extends WizardPage {
 		textDatasourceUsername.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		new Label(grpDatasource, SWT.NONE);
 		
-		Label lblPassword = new Label(grpDatasource, SWT.NONE);
+		lblPassword = new Label(grpDatasource, SWT.NONE);
 		lblPassword.setEnabled(false);
 		lblPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblPassword.setText("Password");
@@ -88,6 +121,7 @@ public class InstallMuraSettingsPage extends WizardPage {
 		textDatasourcePassword.setEnabled(false);
 		textDatasourcePassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
+		// Mail inputs
 		Group grpMail = new Group(composite, SWT.NONE);
 		grpMail.setText("Mail (optional)");
 		grpMail.setLayout(new GridLayout(11, false));
@@ -116,10 +150,10 @@ public class InstallMuraSettingsPage extends WizardPage {
 		textMailPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 10, 1));
 		new Label(grpMail, SWT.NONE);
 		
-		Button btnUseTls = new Button(grpMail, SWT.CHECK);
+		btnUseTls = new Button(grpMail, SWT.CHECK);
 		btnUseTls.setText("Use TLS");
 		
-		Button btnUseSsl = new Button(grpMail, SWT.CHECK);
+		btnUseSsl = new Button(grpMail, SWT.CHECK);
 		btnUseSsl.setText("Use SSL");
 		new Label(grpMail, SWT.NONE);
 		new Label(grpMail, SWT.NONE);
@@ -147,4 +181,5 @@ public class InstallMuraSettingsPage extends WizardPage {
 		// These should be the last lines. Don't put display elements below this comment
 		setControl(composite);
 	}
+	
 }
