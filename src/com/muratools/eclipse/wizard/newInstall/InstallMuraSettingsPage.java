@@ -26,14 +26,19 @@ import org.eclipse.swt.widgets.Spinner;
  *
  */
 public class InstallMuraSettingsPage extends WizardPage {
-	private TabFolder tabFolder;
-	private Text textDatasourceName;
-	private Text textDatasourceUsername;
-	private Text textDatasourcePassword;
-	private Text textMailServer;
-	private Text textAdminEmail;
-	private Text textMailUsername;
-	private Text textMailPassword;
+	public TabFolder tabFolder;
+	public Text textDatasourceName;
+	public Text textDatasourceUsername;
+	public Text textDatasourcePassword;
+	public Text textMailServer;
+	public Text textAdminEmail;
+	public Text textMailUsername;
+	public Text textMailPassword;
+	public Combo comboDatasourceType;
+	
+	private Button btnRequiresCredentials;
+	private Label lblDatasourceUsername;
+	private Label lblDatasourcePassword;
 	
 	protected InstallMuraSettingsPage(ISelection selection){
 		super("New Mura CMS Install");
@@ -47,9 +52,6 @@ public class InstallMuraSettingsPage extends WizardPage {
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NULL);
 		composite.setLayout(new FillLayout(SWT.VERTICAL));
-		
-		// These should be the last lines. Don't put display elements below this comment
-		setControl(composite);
 		
 		tabFolder = new TabFolder(composite, SWT.NONE);
 		
@@ -71,7 +73,7 @@ public class InstallMuraSettingsPage extends WizardPage {
 		lblType.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblType.setText("Datasource Type *");
 		
-		Combo comboDatasourceType = new Combo(compositeDatasource, SWT.READ_ONLY);
+		comboDatasourceType = new Combo(compositeDatasource, SWT.READ_ONLY);
 		comboDatasourceType.setItems(new String[] {"MSSQL", "MySQL", "Oracle", "H2"});
 		comboDatasourceType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		new Label(compositeDatasource, SWT.NONE);
@@ -79,23 +81,45 @@ public class InstallMuraSettingsPage extends WizardPage {
 		new Label(compositeDatasource, SWT.NONE);
 		new Label(compositeDatasource, SWT.NONE);
 		
-		Button btnRequiresCredentials = new Button(compositeDatasource, SWT.CHECK);
+		btnRequiresCredentials = new Button(compositeDatasource, SWT.CHECK);
 		btnRequiresCredentials.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		btnRequiresCredentials.setText("Datasource requires credentials");
+		btnRequiresCredentials.addSelectionListener(new SelectionListener() {
+			
+			public void widgetSelected(SelectionEvent e) {
+				handleSelection();
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				handleSelection();
+			}
+			
+			private void handleSelection(){
+				boolean enabled = btnRequiresCredentials.getSelection();
+				lblDatasourceUsername.setEnabled(enabled);
+				lblDatasourcePassword.setEnabled(enabled);
+				
+				textDatasourceUsername.setEnabled(enabled);
+				textDatasourceUsername.setText("");
+				
+				textDatasourcePassword.setEnabled(enabled);
+				textDatasourcePassword.setText("");
+			}
+		});
 		new Label(compositeDatasource, SWT.NONE);
 		
-		Label lblUsername = new Label(compositeDatasource, SWT.NONE);
-		lblUsername.setEnabled(false);
-		lblUsername.setText("Datasource Username");
+		lblDatasourceUsername = new Label(compositeDatasource, SWT.NONE);
+		lblDatasourceUsername.setEnabled(false);
+		lblDatasourceUsername.setText("Datasource Username");
 		
 		textDatasourceUsername = new Text(compositeDatasource, SWT.BORDER);
 		textDatasourceUsername.setEnabled(false);
 		textDatasourceUsername.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		new Label(compositeDatasource, SWT.NONE);
 		
-		Label lblPassword = new Label(compositeDatasource, SWT.NONE);
-		lblPassword.setEnabled(false);
-		lblPassword.setText("Datasource Password");
+		lblDatasourcePassword = new Label(compositeDatasource, SWT.NONE);
+		lblDatasourcePassword.setEnabled(false);
+		lblDatasourcePassword.setText("Datasource Password");
 		
 		textDatasourcePassword = new Text(compositeDatasource, SWT.BORDER | SWT.PASSWORD);
 		textDatasourcePassword.setEnabled(false);
@@ -193,6 +217,10 @@ public class InstallMuraSettingsPage extends WizardPage {
 		
 		Composite compositeAdvanced = new Composite(tabFolder, SWT.NONE);
 		tbtmAdvanced.setControl(compositeAdvanced);
+		compositeAdvanced.setLayout(new GridLayout(1, false));
+		
+		// These should be the last lines. Don't put display elements below this comment
+		setControl(composite);
 	}
 	
 }
