@@ -17,33 +17,28 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Spinner;
 
 /**
  * @author CHASXG
  *
  */
 public class InstallMuraSettingsPage extends WizardPage {
-	public Text textDatasourceName;
-	public Text textDatasourceUsername;
-	public Text textDatasourcePassword;
-	public Text textMailServer;
-	public Text textMailUsername;
-	public Text textMailPassword;
-	public Text textMailSMTPPort;
-	public Text textMailPOPPort;
-	public Combo comboDatasourceType;
-	public Button btnUseTls;
-	public Button btnUseSsl;
-	
-	private Button btnDatasourceRequiresCredentials;
-	private Label lblUsername;
-	private Label lblPassword;
+	private TabFolder tabFolder;
+	private Text textDatasourceName;
+	private Text textDatasourceUsername;
+	private Text textDatasourcePassword;
+	private Text textMailServer;
+	private Text textAdminEmail;
+	private Text textMailUsername;
+	private Text textMailPassword;
 	
 	protected InstallMuraSettingsPage(ISelection selection){
 		super("New Mura CMS Install");
 		setTitle("Installation Settings");
-		setDescription("Define the basic settings for the new Mura CMS install.");
+		setDescription("Define the settings for the new Mura CMS install.");
 	}
 	
 	/* (non-Javadoc)
@@ -53,133 +48,151 @@ public class InstallMuraSettingsPage extends WizardPage {
 		Composite composite = new Composite(parent, SWT.NULL);
 		composite.setLayout(new FillLayout(SWT.VERTICAL));
 		
-		// Datasource inputs
-		Group grpDatasource = new Group(composite, SWT.NONE);
-		grpDatasource.setText("Datasource");
-		grpDatasource.setLayout(new GridLayout(3, false));
+		// These should be the last lines. Don't put display elements below this comment
+		setControl(composite);
 		
-		Label lblName = new Label(grpDatasource, SWT.NONE);
+		tabFolder = new TabFolder(composite, SWT.NONE);
+		
+		TabItem tabDatasource = new TabItem(tabFolder, SWT.NONE);
+		tabDatasource.setText("Required");
+		
+		Composite compositeDatasource = new Composite(tabFolder, SWT.NONE);
+		tabDatasource.setControl(compositeDatasource);
+		compositeDatasource.setLayout(new GridLayout(3, false));
+		
+		Label lblName = new Label(compositeDatasource, SWT.NONE);
 		lblName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblName.setText("Name");
+		lblName.setText("Datasource Name *");
 		
-		textDatasourceName = new Text(grpDatasource, SWT.BORDER);
+		textDatasourceName = new Text(compositeDatasource, SWT.BORDER);
 		textDatasourceName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		
-		Label lblType = new Label(grpDatasource, SWT.NONE);
+		Label lblType = new Label(compositeDatasource, SWT.NONE);
 		lblType.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblType.setText("Type");
+		lblType.setText("Datasource Type *");
 		
-		comboDatasourceType = new Combo(grpDatasource, SWT.READ_ONLY);
+		Combo comboDatasourceType = new Combo(compositeDatasource, SWT.READ_ONLY);
+		comboDatasourceType.setItems(new String[] {"MSSQL", "MySQL", "Oracle", "H2"});
 		comboDatasourceType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		comboDatasourceType.setItems(new String [] {"MSSQL","MySQL","Oracle","H2"});
-		new Label(grpDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
 		
-		btnDatasourceRequiresCredentials = new Button(grpDatasource, SWT.CHECK);
-		btnDatasourceRequiresCredentials.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-		btnDatasourceRequiresCredentials.setText("Datasource requires credentials");
-		btnDatasourceRequiresCredentials.addSelectionListener(new SelectionListener() {
-			
-			public void widgetSelected(SelectionEvent e) {
-				enableDisableDatasourceCredentialFields();
-			}
-			
-			public void widgetDefaultSelected(SelectionEvent e) {
-				enableDisableDatasourceCredentialFields();
-			}
-			
-			private void enableDisableDatasourceCredentialFields(){
-				boolean enabled = btnDatasourceRequiresCredentials.getSelection();
-				textDatasourceUsername.setEnabled(enabled);
-				textDatasourcePassword.setEnabled(enabled);
-				lblUsername.setEnabled(enabled);
-				lblPassword.setEnabled(enabled);
-				
-				if (!enabled){
-					textDatasourceUsername.setText("");
-					textDatasourcePassword.setText("");
-				}
-			}
-		});
-		new Label(grpDatasource, SWT.NONE);
+		Button btnRequiresCredentials = new Button(compositeDatasource, SWT.CHECK);
+		btnRequiresCredentials.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+		btnRequiresCredentials.setText("Datasource requires credentials");
+		new Label(compositeDatasource, SWT.NONE);
 		
-		lblUsername = new Label(grpDatasource, SWT.NONE);
+		Label lblUsername = new Label(compositeDatasource, SWT.NONE);
 		lblUsername.setEnabled(false);
-		lblUsername.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblUsername.setText("Username");
+		lblUsername.setText("Datasource Username");
 		
-		textDatasourceUsername = new Text(grpDatasource, SWT.BORDER);
+		textDatasourceUsername = new Text(compositeDatasource, SWT.BORDER);
 		textDatasourceUsername.setEnabled(false);
 		textDatasourceUsername.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		new Label(grpDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
 		
-		lblPassword = new Label(grpDatasource, SWT.NONE);
+		Label lblPassword = new Label(compositeDatasource, SWT.NONE);
 		lblPassword.setEnabled(false);
-		lblPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblPassword.setText("Password");
+		lblPassword.setText("Datasource Password");
 		
-		textDatasourcePassword = new Text(grpDatasource, SWT.BORDER | SWT.PASSWORD);
+		textDatasourcePassword = new Text(compositeDatasource, SWT.BORDER | SWT.PASSWORD);
 		textDatasourcePassword.setEnabled(false);
 		textDatasourcePassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
 		
-		// Mail inputs
-		Group grpMail = new Group(composite, SWT.NONE);
-		grpMail.setText("Mail (optional)");
-		grpMail.setLayout(new GridLayout(11, false));
+		Label lblAdminEmail = new Label(compositeDatasource, SWT.NONE);
+		lblAdminEmail.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblAdminEmail.setText("Admin Email *");
 		
-		Label lblServer = new Label(grpMail, SWT.NONE);
+		textAdminEmail = new Text(compositeDatasource, SWT.BORDER);
+		textAdminEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		new Label(compositeDatasource, SWT.NONE);
+		
+		Label lblRequired = new Label(compositeDatasource, SWT.NONE);
+		lblRequired.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblRequired.setText("* = Required Field");
+		
+		TabItem tabMail = new TabItem(tabFolder, SWT.NONE);
+		tabMail.setText("Mail (optional)");
+		
+		Composite compositeMail = new Composite(tabFolder, SWT.NONE);
+		tabMail.setControl(compositeMail);
+		compositeMail.setLayout(new GridLayout(11, false));
+		
+		Label lblServer = new Label(compositeMail, SWT.NONE);
 		lblServer.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblServer.setText("Server");
 		
-		textMailServer = new Text(grpMail, SWT.BORDER);
-		GridData gd_textMailServer = new GridData(SWT.FILL, SWT.CENTER, true, false, 10, 1);
-		gd_textMailServer.widthHint = 448;
-		textMailServer.setLayoutData(gd_textMailServer);
+		textMailServer = new Text(compositeMail, SWT.BORDER);
+		textMailServer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 10, 1));
 		
-		Label lblUsername_1 = new Label(grpMail, SWT.NONE);
+		Label lblUsername_1 = new Label(compositeMail, SWT.NONE);
 		lblUsername_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblUsername_1.setText("Username");
 		
-		textMailUsername = new Text(grpMail, SWT.BORDER);
+		textMailUsername = new Text(compositeMail, SWT.BORDER);
 		textMailUsername.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 10, 1));
 		
-		Label lblPassword_1 = new Label(grpMail, SWT.NONE);
+		Label lblPassword_1 = new Label(compositeMail, SWT.NONE);
 		lblPassword_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblPassword_1.setText("Password");
 		
-		textMailPassword = new Text(grpMail, SWT.BORDER | SWT.PASSWORD);
+		textMailPassword = new Text(compositeMail, SWT.BORDER | SWT.PASSWORD);
 		textMailPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 10, 1));
-		new Label(grpMail, SWT.NONE);
+		new Label(compositeMail, SWT.NONE);
+		new Label(compositeMail, SWT.NONE);
 		
-		btnUseTls = new Button(grpMail, SWT.CHECK);
-		btnUseTls.setText("Use TLS");
-		
-		btnUseSsl = new Button(grpMail, SWT.CHECK);
-		btnUseSsl.setText("Use SSL");
-		new Label(grpMail, SWT.NONE);
-		new Label(grpMail, SWT.NONE);
-		new Label(grpMail, SWT.NONE);
-		
-		Label lblSmtpPort = new Label(grpMail, SWT.NONE);
-		GridData gd_lblSmtpPort = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-		gd_lblSmtpPort.heightHint = 13;
-		lblSmtpPort.setLayoutData(gd_lblSmtpPort);
+		Label lblSmtpPort = new Label(compositeMail, SWT.NONE);
+		lblSmtpPort.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblSmtpPort.setText("SMTP Port");
 		
-		textMailSMTPPort = new Text(grpMail, SWT.BORDER);
-		textMailSMTPPort.setText("25");
-		textMailSMTPPort.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		new Label(grpMail, SWT.NONE);
+		Spinner spinnerMailSMTPPort = new Spinner(compositeMail, SWT.BORDER);
+		spinnerMailSMTPPort.setMaximum(99999);
+		spinnerMailSMTPPort.setMinimum(1);
+		spinnerMailSMTPPort.setSelection(25);
+		spinnerMailSMTPPort.setPageIncrement(1);
+		new Label(compositeMail, SWT.NONE);
 		
-		Label lblPopPort = new Label(grpMail, SWT.NONE);
+		Label lblPopPort = new Label(compositeMail, SWT.NONE);
 		lblPopPort.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblPopPort.setText("POP Port");
 		
-		textMailPOPPort = new Text(grpMail, SWT.BORDER);
-		textMailPOPPort.setText("110");
-		textMailPOPPort.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		Spinner spinnerMailPOPPort = new Spinner(compositeMail, SWT.BORDER);
+		spinnerMailPOPPort.setMaximum(999999);
+		spinnerMailPOPPort.setMinimum(1);
+		spinnerMailPOPPort.setSelection(110);
+		spinnerMailPOPPort.setPageIncrement(1);
+		new Label(compositeMail, SWT.NONE);
 		
-		// These should be the last lines. Don't put display elements below this comment
-		setControl(composite);
+		Button btnUseTls = new Button(compositeMail, SWT.CHECK);
+		btnUseTls.setText("Use TLS");
+		new Label(compositeMail, SWT.NONE);
+		
+		Button btnUseSsl = new Button(compositeMail, SWT.CHECK);
+		btnUseSsl.setText("Use SSL");
+		
+		TabItem tbtmAdvanced = new TabItem(tabFolder, SWT.NONE);
+		tbtmAdvanced.setText("Advanced");
+		
+		Composite compositeAdvanced = new Composite(tabFolder, SWT.NONE);
+		tbtmAdvanced.setControl(compositeAdvanced);
 	}
 	
 }
