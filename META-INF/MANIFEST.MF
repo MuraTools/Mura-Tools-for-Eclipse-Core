@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Mura Tools Lite
+Bundle-Name: Mura Tools
 Bundle-SymbolicName: com.muratools.eclipse;singleton:=true
-Bundle-Version: 1.1.0.qualifier
+Bundle-Version: 1.2.0.qualifier
 Bundle-Activator: com.muratools.eclipse.Activator
 Bundle-Vendor: muratools.com
 Require-Bundle: org.eclipse.ui,
