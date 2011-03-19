@@ -145,24 +145,66 @@ public class NewInstallWizard extends MuraToolsWizard {
 	private void setupIniFile() throws IOException{
 		File settingsFile = new File(getTargetDirectory() + "/config/settings.ini.cfm");
 		Wini ini = new Wini(settingsFile);
+		String mode = "production";
+		
+		// settings section
+		ini.put("settings", "appname", settingsPage.textAppName.getText());
+		ini.put("settings", "appreloadkey", settingsPage.textReloadKey.getText());
 		
 		// setup datasource
-		ini.put("production", "datasource", settingsPage.textDatasourceName.getText());
-		ini.put("production","dbtype", settingsPage.comboDatasourceType.getText().toLowerCase());
-		ini.put("production", "dbusername", settingsPage.textDatasourceUsername.getText());
-		ini.put("production", "dbpassword", settingsPage.textDatasourcePassword.getText());
+		ini.put(mode, "datasource", settingsPage.textDatasourceName.getText());
+		ini.put(mode,"dbtype", settingsPage.comboDatasourceType.getText().toLowerCase());
+		ini.put(mode, "dbusername", settingsPage.textDatasourceUsername.getText());
+		ini.put(mode, "dbpassword", settingsPage.textDatasourcePassword.getText());
 		
 		// setup mail settings
-		ini.put("production", "mailserverip", settingsPage.textMailServer.getText());
-		ini.put("production", "mailserversmtpport",settingsPage.spinnerMailSMTPPort.getText());
-		ini.put("production", "mailserverpopport", settingsPage.spinnerMailPOPPort.getText());
-		ini.put("production", "mailserverusername", settingsPage.textMailUsername.getText());
-		ini.put("production", "mailserverpassword", settingsPage.textMailPassword.getText());
-		ini.put("production", "mailservertls", settingsPage.btnUseTls.getSelection());
-		ini.put("production", "mailserverssl", settingsPage.btnUseSsl.getSelection());
+		ini.put(mode, "mailserverip", settingsPage.textMailServer.getText());
+		ini.put(mode, "mailserversmtpport",settingsPage.spinnerMailSMTPPort.getText());
+		ini.put(mode, "mailserverpopport", settingsPage.spinnerMailPOPPort.getText());
+		ini.put(mode, "mailserverusername", settingsPage.textMailUsername.getText());
+		ini.put(mode, "mailserverpassword", settingsPage.textMailPassword.getText());
+		ini.put(mode, "mailservertls", settingsPage.btnUseTls.getSelection());
+		ini.put(mode, "mailserverssl", settingsPage.btnUseSsl.getSelection());
+		ini.put(mode, "usedefaultsmtpserver", settingsPage.btnUseDefaultSMTPServer.getSelection() ? 1 : 0);
+		
+		// other settings
+		ini.put(mode, "title", settingsPage.textTitle.getText());
 		
 		// setup admin settings
-		ini.put("production", "adminemail", settingsPage.textAdminEmail.getText());
+		ini.put(mode, "adminemail", settingsPage.textAdminEmail.getText());
+		ini.put(mode, "filedir", settingsPage.textFileDir.getText());
+		ini.put(mode, "filestore", settingsPage.comboFileStore.getText());
+		ini.put(mode, "filestoreaccessinfo", settingsPage.comboFileStore.getText() == "s3" ? settingsPage.textS3AccessKey.getText() + "^" + settingsPage.textS3SecretKey.getText() + "^" + settingsPage.textS3Bucket.getText() : "");
+		ini.put(mode, "assetpath", settingsPage.textAssetPath.getText());
+		ini.put(mode, "context", settingsPage.textContext.getText());
+		ini.put(mode, "stub", settingsPage.comboStub.getText());
+		ini.put(mode, "admindomain", settingsPage.textAdminDomain.getText());
+		ini.put(mode, "adminssl", settingsPage.btnUseSslForAdmin.getSelection() ? 1 : 0);
+		ini.put(mode, "logevents", settingsPage.btnLogEvents.getSelection() ? 1 : 0);
+		ini.put(mode, "debuggingenabled", settingsPage.btnDebuggingEnabled.getSelection());
+		ini.put(mode, "port", settingsPage.spinnerPort.getText());
+		ini.put(mode, "sessionhistory", settingsPage.spinnerSessionHistory.getText());
+		ini.put(mode, "sharableremotesessions", settingsPage.btnSharableRemoteSessions.getSelection() ? 1 : 0);
+		ini.put(mode, "dashboard", settingsPage.btnEnableDashboard.getSelection());
+		ini.put(mode, "locale", settingsPage.comboLocale.getText());
+		ini.put(mode, "ping", settingsPage.btnPing.getSelection() ? 1 : 0);
+		ini.put(mode, "enablemuratag", settingsPage.btnEnableMuraTag.getSelection());
+		ini.put(mode, "proxyuser", settingsPage.textProxyUser.getText());
+		ini.put(mode, "proxypassword", settingsPage.textProxyPassword.getText());
+		ini.put(mode, "proxyserver", settingsPage.textProxyServer.getText());
+		ini.put(mode, "proxyport", settingsPage.spinnerProxyPort.getText());
+		ini.put(mode, "sortpermission", settingsPage.textSortPermission.getText());
+		ini.put(mode, "imageinterpolation", settingsPage.comboImageInterpolation.getText());
+		ini.put(mode, "clusterlist", settingsPage.textClusterList.getText());
+		ini.put(mode, "siteidinurls", settingsPage.btnSiteIdInURLs.getSelection() ? 1 : 0);
+		ini.put(mode, "indexfileinurls", settingsPage.btnIndexInUrls.getSelection() ? 1 : 0);
+		ini.put(mode, "strictExtendedData", settingsPage.btnStrictExtendedData.getSelection() ? 1 : 0);
+		ini.put(mode, "loginStrikes", settingsPage.spinnerLoginStrikes.getText());
+		ini.put(mode, "tempDir", settingsPage.textTempDir.getText());
+		ini.put(mode, "purgeDrafts", settingsPage.btnPurgeDrafts.getSelection());
+		ini.put(mode, "confirmSaveAsDraft", settingsPage.btnConfirmSaveAsDraft.getSelection());
+		ini.put(mode, "notifyWithVersionLink", settingsPage.btnNotifyWithVersion.getSelection());
+		ini.put(mode, "autoresetpasswords", settingsPage.btnAutoResetPasswords.getSelection());
 		
 		// write the values to the settings.ini.cfm file
 		ini.store();
