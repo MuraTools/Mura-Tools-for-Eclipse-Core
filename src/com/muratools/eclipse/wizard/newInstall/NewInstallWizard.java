@@ -33,17 +33,21 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.ini4j.Wini;
 
 import com.muratools.eclipse.MuraToolsWizard;
 
 public class NewInstallWizard extends MuraToolsWizard {
 	
 	private InstallMuraPage page;
+	private InstallMuraSettingsPage settingsPage;
 	private String zipLocation = System.getProperty("java.io.tmpdir") + "/mura-latest.zip";
 	
 	public void addPages(){
 		page = new InstallMuraPage(getSelection());
 		addPage(page);
+		settingsPage = new InstallMuraSettingsPage(getSelection());
+		addPage(settingsPage);
 	}
 	
 	@Override
@@ -59,7 +63,17 @@ public class NewInstallWizard extends MuraToolsWizard {
 			}
 			zipLocation = page.fileField.getText();
 		}
+		// deploy the contents of the mura zip file
 		deployMuraZip();
+		
+		// edit the settings.ini.cfm file with collected data
+		try{
+			setupIniFile();
+		} catch (IOException e){
+			// there was an error reading or writing the settings.ini.cfm file. For now do nothing
+		}
+		
+		// refresh the container
 		refreshContainer();
 		return true;
 	}
@@ -127,6 +141,32 @@ public class NewInstallWizard extends MuraToolsWizard {
 	    in.close();
 	    out.close();
 	  }
+	
+	private void setupIniFile() throws IOException{
+		File settingsFile = new File(getTargetDirectory() + "/config/settings.ini.cfm");
+		Wini ini = new Wini(settingsFile);
+		
+		// setup datasource
+		ini.put("production", "datasource", settingsPage.textDatasourceName.getText());
+		ini.put("production","dbtype", settingsPage.comboDatasourceType.getText().toLowerCase());
+		ini.put("production", "dbusername", settingsPage.textDatasourceUsername.getText());
+		ini.put("production", "dbpassword", settingsPage.textDatasourcePassword.getText());
+		
+		// setup mail settings
+		ini.put("production", "mailserverip", settingsPage.textMailServer.getText());
+		ini.put("production", "mailserversmtpport",settingsPage.spinnerMailSMTPPort.getText());
+		ini.put("production", "mailserverpopport", settingsPage.spinnerMailPOPPort.getText());
+		ini.put("production", "mailserverusername", settingsPage.textMailUsername.getText());
+		ini.put("production", "mailserverpassword", settingsPage.textMailPassword.getText());
+		ini.put("production", "mailservertls", settingsPage.btnUseTls.getSelection());
+		ini.put("production", "mailserverssl", settingsPage.btnUseSsl.getSelection());
+		
+		// setup admin settings
+		ini.put("production", "adminemail", settingsPage.textAdminEmail.getText());
+		
+		// write the values to the settings.ini.cfm file
+		ini.store();
+	}
 	
 	private void deployMuraZip(){
 		ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
