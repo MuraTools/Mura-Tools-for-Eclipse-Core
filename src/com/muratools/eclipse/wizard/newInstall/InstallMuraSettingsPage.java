@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -23,7 +22,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.events.SelectionAdapter;
 
 /**
- * @author CHASXG
+ * @author Steve Good
  *
  */
 public class InstallMuraSettingsPage extends WizardPage {
@@ -100,7 +99,7 @@ public class InstallMuraSettingsPage extends WizardPage {
 	private Label lblStub;
 	private Label lblAdminDomain;
 	private Label lblPort;
-	private TabItem tbtmAdvanced_1;
+	private TabItem tbtmAdvanced2;
 	private Composite compositeAdvanced2;
 	private Label lblSessionHistory;
 	private Label lblLocale;
@@ -454,20 +453,20 @@ public class InstallMuraSettingsPage extends WizardPage {
 			private void handleSelection(){
 				String selectedText = comboFileStore.getText();
 				
-				lblFileDir.setEnabled(selectedText == "fileDir");
-				textFileDir.setEnabled(selectedText == "fileDir");
+				lblFileDir.setEnabled(selectedText.equals("fileDir"));
+				textFileDir.setEnabled(selectedText.equals("fileDir"));
 				textFileDir.setText("");
 				
-				lblS3AccessKey.setEnabled(selectedText == "s3");
-				textS3AccessKey.setEnabled(selectedText == "s3");
+				lblS3AccessKey.setEnabled(selectedText.equals("s3"));
+				textS3AccessKey.setEnabled(selectedText.equals("s3"));
 				textS3AccessKey.setText("");
 				
-				lblS3SecretKey.setEnabled(selectedText == "s3");
-				textS3SecretKey.setEnabled(selectedText == "s3");
+				lblS3SecretKey.setEnabled(selectedText.equals("s3"));
+				textS3SecretKey.setEnabled(selectedText.equals("s3"));
 				textS3SecretKey.setText("");
 				
-				lblS3Bucket.setEnabled(selectedText == "s3");
-				textS3Bucket.setEnabled(selectedText == "s3");
+				lblS3Bucket.setEnabled(selectedText.equals("s3"));
+				textS3Bucket.setEnabled(selectedText.equals("s3"));
 				textS3Bucket.setText("");
 			}
 		});
@@ -542,11 +541,11 @@ public class InstallMuraSettingsPage extends WizardPage {
 		spinnerPort.setMinimum(1);
 		spinnerPort.setSelection(80);
 		
-		tbtmAdvanced_1 = new TabItem(tabFolder, SWT.NONE);
-		tbtmAdvanced_1.setText("Advanced 2");
+		tbtmAdvanced2 = new TabItem(tabFolder, SWT.NONE);
+		tbtmAdvanced2.setText("Advanced 2");
 		
 		compositeAdvanced2 = new Composite(tabFolder, SWT.NONE);
-		tbtmAdvanced_1.setControl(compositeAdvanced2);
+		tbtmAdvanced2.setControl(compositeAdvanced2);
 		compositeAdvanced2.setLayout(new GridLayout(4, false));
 		
 		lblSessionHistory = new Label(compositeAdvanced2, SWT.NONE);
