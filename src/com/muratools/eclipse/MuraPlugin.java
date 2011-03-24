@@ -107,25 +107,31 @@ public class MuraPlugin {
 				}
 			}
 			
-			NodeList eventHandlerNl = docEl.getElementsByTagName("eventHandler");
-			if (eventHandlerNl != null && eventHandlerNl.getLength() > 0){
-				for (int i=0; i < eventHandlerNl.getLength(); i++){
-					Element eventHandlerEl = (Element)eventHandlerNl.item(i);
-					EventHandler eventHandler = new EventHandler();
-					eventHandler.setComponent(eventHandlerEl.getAttribute("component"));
-					eventHandler.setEvent(eventHandlerEl.getAttribute("event"));
-					config.addEventHandler(eventHandler);
+			String[] ehNodes = {"eventHandler","EventHandler","eventhandler","Eventhandler"};
+			for (String node : ehNodes){
+				NodeList eventHandlerNl = docEl.getElementsByTagName(node);
+				if (eventHandlerNl != null && eventHandlerNl.getLength() > 0){
+					for (int i=0; i < eventHandlerNl.getLength(); i++){
+						Element eventHandlerEl = (Element)eventHandlerNl.item(i);
+						EventHandler eventHandler = new EventHandler();
+						eventHandler.setComponent(eventHandlerEl.getAttribute("component"));
+						eventHandler.setEvent(eventHandlerEl.getAttribute("event"));
+						config.addEventHandler(eventHandler);
+					}
 				}
 			}
 			
-			NodeList displayObjectNl = docEl.getElementsByTagName("displayObject");
-			if (displayObjectNl != null && displayObjectNl.getLength() > 0){
-				for (int i=0; i < displayObjectNl.getLength(); i++){
-					Element displayObjectEl = (Element)displayObjectNl.item(i);
-					DisplayObject displayObject = new DisplayObject();
-					displayObject.setFileName(displayObjectEl.getAttribute("displayobjectfile"));
-					displayObject.setName(displayObjectEl.getAttribute("name"));
-					config.addDisplayObject(displayObject);
+			String[] doNodes = {"displayObject","DisplayObject","displayobject","Displayobject"};
+			for (String node : doNodes){
+				NodeList displayObjectNl = docEl.getElementsByTagName(node);
+				if (displayObjectNl != null && displayObjectNl.getLength() > 0){
+					for (int i=0; i < displayObjectNl.getLength(); i++){
+						Element displayObjectEl = (Element)displayObjectNl.item(i);
+						DisplayObject displayObject = new DisplayObject();
+						displayObject.setFileName(displayObjectEl.getAttribute("displayobjectfile"));
+						displayObject.setName(displayObjectEl.getAttribute("name"));
+						config.addDisplayObject(displayObject);
+					}
 				}
 			}
 		} catch (Exception e){
