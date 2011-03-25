@@ -121,6 +121,19 @@ public class MuraPlugin {
 				}
 			}
 			
+			// Get the location attribute from DisplayObjects
+			String[] displayObjectsNode = {"DisplayObjects","displayObjects","displayobjects","Displayobjects"};
+			for (String node : displayObjectsNode){
+				NodeList dispObjsNl = docEl.getElementsByTagName(node);
+				Element dispObjsEl = (Element)dispObjsNl.item(0);
+				if (dispObjsEl != null && dispObjsEl.getAttribute("location").length() > 0){
+					config.setDisplayObjectsLocation(dispObjsEl.getAttribute("location"));
+					break;
+				} else {
+					config.setDisplayObjectsLocation("global");
+				}
+			}
+			
 			String[] doNodes = {"displayObject","DisplayObject","displayobject","Displayobject"};
 			for (String node : doNodes){
 				NodeList displayObjectNl = docEl.getElementsByTagName(node);
@@ -245,7 +258,7 @@ public class MuraPlugin {
 		if (getConfig().getDisplayObjects().size() == 0){
 			sb.append("\n\t<DisplayObjects />");
 		} else {
-			sb.append("\n\t<DisplayObjects location=\"global\">");
+			sb.append("\n\t<DisplayObjects location=\"" + getConfig().getDisplayObjectsLocation() + "\">");
 			for (DisplayObject displayObject : getConfig().getDisplayObjects()){
 				sb.append("\n\t\t<displayObject name=\"" + displayObject.getName() + "\" displayobjectfile=\"displayObjects/" + displayObject.getFileName() + ".cfm\" />");
 			}

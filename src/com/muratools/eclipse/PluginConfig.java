@@ -30,6 +30,7 @@ public class PluginConfig {
 	private String _loadPriority;
 	private ArrayList<SettingField> _settings = new ArrayList<SettingField>();
 	private ArrayList<EventHandler> _eventHandlers = new ArrayList<EventHandler>();
+	private String _displayObjectsLocation;
 	private ArrayList<DisplayObject> _displayObjects = new ArrayList<DisplayObject>();
 	private License license = new License();
 	
@@ -149,4 +150,17 @@ public class PluginConfig {
 		this.license = license;
 	}
 	
+	/**
+	 * @return the displayObjectsLocation
+	 */
+	public String getDisplayObjectsLocation() {
+		return _displayObjectsLocation;
+	}
+
+	/**
+	 * @param displayObjectsLocation the displayObjectsLocation to set
+	 */
+	public void setDisplayObjectsLocation(String displayObjectsLocation) {
+		this._displayObjectsLocation = displayObjectsLocation;
+	}
 }
