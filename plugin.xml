@@ -41,4 +41,18 @@
          </action>
       </objectContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.muratools.eclipse.preferences.MuraToolsPreferencePage"
+            id="com.muratools.eclipse.preferences.MuraToolsPreferencePage"
+            name="Mura Tools">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.muratools.eclipse.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
 </plugin>
