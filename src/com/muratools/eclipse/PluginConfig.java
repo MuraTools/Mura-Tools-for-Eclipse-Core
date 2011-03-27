@@ -33,6 +33,7 @@ public class PluginConfig {
 	private String _displayObjectsLocation;
 	private ArrayList<DisplayObject> _displayObjects = new ArrayList<DisplayObject>();
 	private License license = new License();
+	private ArrayList<GenericSetting> _customSettings = new ArrayList<GenericSetting>();
 	
 	public PluginConfig(){
 		
@@ -162,5 +163,13 @@ public class PluginConfig {
 	 */
 	public void setDisplayObjectsLocation(String displayObjectsLocation) {
 		this._displayObjectsLocation = displayObjectsLocation;
+	}
+	
+	public void addCustomSetting(GenericSetting customSetting){
+		_customSettings.add(customSetting);
+	}
+	
+	public ArrayList<GenericSetting> getCustomSettings(){
+		return _customSettings;
 	}
 }

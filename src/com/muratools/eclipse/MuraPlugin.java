@@ -21,24 +21,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import com.muratools.eclipse.utils.PluginConfigUtility;
 
 public class MuraPlugin {
 	
 	private PluginConfig config;
 	private String targetDirectory;
 	private String downloadLocation = "http://getmura.com/currentversion/";
+	private ArrayList<String> nodeList;
 	
 	public MuraPlugin(){
-		// Nothing to see here...
+		setupNodeList();
 	}
 	
 	public MuraPlugin(String targetDirectory){
+		setupNodeList();
 		setTargetDirectory(targetDirectory);
 	}
 	
@@ -72,81 +69,10 @@ public class MuraPlugin {
 			if (!pluginXMLFile.exists()){
 				pluginXMLFile = new File(getTargetDirectory() + ".cfm");
 			}
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(pluginXMLFile);
-			Element docEl = doc.getDocumentElement();
 			
-			config.setName(getValueFromElement(docEl,"name"));
-			config.setPackage(getValueFromElement(docEl,"package"));
-			config.setLoadPriority(getValueFromElement(docEl,"loadPriority"));
-			config.setVersion(getValueFromElement(docEl,"version"));
-			config.setProvider(getValueFromElement(docEl,"provider"));
-			config.setProviderURL(getValueFromElement(docEl,"providerURL"));
-			config.setCategory(getValueFromElement(docEl,"category"));
+			PluginConfigUtility configUtil = new PluginConfigUtility(pluginXMLFile);
+			config = configUtil.getPluginConfig();
 			
-			NodeList settingNl = docEl.getElementsByTagName("setting");
-			if (settingNl != null && settingNl.getLength() > 0){
-				for (int i=0; i < settingNl.getLength(); i++){
-					Element settingEl = (Element)settingNl.item(i);
-					
-					SettingField setting = new SettingField();
-					setting.setName(getValueFromElement((Element)settingEl.getChildNodes(), "name"));
-					setting.setLabel(getValueFromElement((Element)settingEl.getChildNodes(), "label"));
-					setting.setHint(getValueFromElement((Element)settingEl.getChildNodes(), "hint"));
-					setting.setType(getValueFromElement((Element)settingEl.getChildNodes(), "type"));
-					setting.setRequired(new Boolean(getValueFromElement((Element)settingEl.getChildNodes(), "required")));
-					setting.setValidation(getValueFromElement((Element)settingEl.getChildNodes(), "validation"));
-					setting.setRegEx(getValueFromElement((Element)settingEl.getChildNodes(), "regex"));
-					setting.setMessage(getValueFromElement((Element)settingEl.getChildNodes(), "message"));
-					setting.setDefaultValue(getValueFromElement((Element)settingEl.getChildNodes(), "defaultValue"));
-					setting.setOptionList(getValueFromElement((Element)settingEl.getChildNodes(), "optionList"));
-					setting.setOptionLabelList(getValueFromElement((Element)settingEl.getChildNodes(), "optionLabelList"));
-					
-					config.addSettingField(setting);
-				}
-			}
-			
-			String[] ehNodes = {"eventHandler","EventHandler","eventhandler","Eventhandler"};
-			for (String node : ehNodes){
-				NodeList eventHandlerNl = docEl.getElementsByTagName(node);
-				if (eventHandlerNl != null && eventHandlerNl.getLength() > 0){
-					for (int i=0; i < eventHandlerNl.getLength(); i++){
-						Element eventHandlerEl = (Element)eventHandlerNl.item(i);
-						EventHandler eventHandler = new EventHandler();
-						eventHandler.setComponent(eventHandlerEl.getAttribute("component"));
-						eventHandler.setEvent(eventHandlerEl.getAttribute("event"));
-						config.addEventHandler(eventHandler);
-					}
-				}
-			}
-			
-			// Get the location attribute from DisplayObjects
-			String[] displayObjectsNode = {"DisplayObjects","displayObjects","displayobjects","Displayobjects"};
-			for (String node : displayObjectsNode){
-				NodeList dispObjsNl = docEl.getElementsByTagName(node);
-				Element dispObjsEl = (Element)dispObjsNl.item(0);
-				if (dispObjsEl != null && dispObjsEl.getAttribute("location").length() > 0){
-					config.setDisplayObjectsLocation(dispObjsEl.getAttribute("location"));
-					break;
-				} else {
-					config.setDisplayObjectsLocation("global");
-				}
-			}
-			
-			String[] doNodes = {"displayObject","DisplayObject","displayobject","Displayobject"};
-			for (String node : doNodes){
-				NodeList displayObjectNl = docEl.getElementsByTagName(node);
-				if (displayObjectNl != null && displayObjectNl.getLength() > 0){
-					for (int i=0; i < displayObjectNl.getLength(); i++){
-						Element displayObjectEl = (Element)displayObjectNl.item(i);
-						DisplayObject displayObject = new DisplayObject();
-						displayObject.setFileName(displayObjectEl.getAttribute("displayobjectfile"));
-						displayObject.setName(displayObjectEl.getAttribute("name"));
-						config.addDisplayObject(displayObject);
-					}
-				}
-			}
 		} catch (Exception e){
 			e.printStackTrace();
 		}
@@ -154,18 +80,7 @@ public class MuraPlugin {
 		return config;
 	}
 	
-	private String getValueFromElement(Element el, String tagName){
-		NodeList nodeList = el.getElementsByTagName(tagName);
-		String value = "";
-		if (nodeList != null && nodeList.getLength() > 0){
-			Element childEl = (Element)nodeList.item(0);
-			if (childEl.getFirstChild() != null){
-				value = childEl.getFirstChild().getNodeValue().toString();
-			}
-		}
-		
-		return value;
-	}
+	
 	
 	public boolean createPlugin(PluginConfig config){
 		this.config = config;
@@ -202,6 +117,7 @@ public class MuraPlugin {
 		sb.append(getSettingsBuffer()); // Settings XML
 		sb.append(getEventHandlersBuffer()); // Event Handlers XML
 		sb.append(getDisplayObjectsBuffer()); // Display Objects XML
+		sb.append(getCustomSettingsBuffer());
 		sb.append("\n</plugin>");
 		
 		writeToFile(new File(targetDirectory + "/plugin/config.xml").exists() ? "config.xml" : "config.xml.cfm", targetDirectory + "/plugin", sb);
@@ -265,6 +181,44 @@ public class MuraPlugin {
 			sb.append("\n\t</DisplayObjects>");
 		}
 		return sb;
+	}
+	
+	private StringBuffer getCustomSettingsBuffer(){
+		StringBuffer sb = new StringBuffer();
+		
+		ArrayList<GenericSetting> customSettings = getConfig().getCustomSettings();
+		if (customSettings.size() > 0){
+			for (int i=0; i < customSettings.size(); i++){
+				appendCustomSettingsBuffer(sb, customSettings.get(i),"\t");
+			}
+		}
+		
+		return sb;
+	}
+	
+	private void appendCustomSettingsBuffer(StringBuffer sb, GenericSetting setting,String tabbing){
+		sb.append("\n" + tabbing + "<" + setting.getName());
+		if (setting.hasAttributes()){
+			for (GenericSettingAttribute attribute : setting.getAttributes()){
+				sb.append(" " + attribute.getName() + "=\"" + attribute.getValue() + "\"");
+			}
+		}
+		
+		if (setting.hasSettings()){
+			sb.append(">");
+			for (int i=0; i < setting.getSettings().size(); i++){
+				appendCustomSettingsBuffer(sb, setting.getSettings().get(i), tabbing + "\t");
+			}
+			sb.append("\n" + tabbing + "</" + setting.getName() + ">");
+		} else {
+			if (setting.getValue() != null && setting.getValue().length() > 0){
+				sb.append(">");
+				sb.append(setting.getValue());
+				sb.append("</" + setting.getName() + ">");
+			} else {
+				sb.append(" />");
+			}
+		}
 	}
 	
 	private void writeToFile(String fileName, String targetDirectory, StringBuffer content){
@@ -389,6 +343,20 @@ public class MuraPlugin {
 	
 	private void createLicenseFile(String fileName){
 		writeToFile(fileName, targetDirectory, new StringBuffer(getConfig().getLicense().getText()));
+	}
+	
+	private void setupNodeList(){
+		nodeList = new ArrayList<String>();
+		nodeList.add("name");
+		nodeList.add("package");
+		nodeList.add("loadpriority");
+		nodeList.add("version");
+		nodeList.add("provider");
+		nodeList.add("providerurl");
+		nodeList.add("category");
+		nodeList.add("settings");
+		nodeList.add("eventhandlers");
+		nodeList.add("displayobjects");
 	}
 	
 }
