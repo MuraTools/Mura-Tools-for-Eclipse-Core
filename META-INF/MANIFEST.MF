@@ -12,5 +12,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.expressions;bundle-version="3.4.100"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: xom-1.2.6.jar,
- .
+Bundle-ClassPath: .,
+ ini4j.jar,
+ xom-1.2.6.jar

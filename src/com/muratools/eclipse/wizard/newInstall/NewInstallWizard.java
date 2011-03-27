@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -35,15 +36,19 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import com.muratools.eclipse.MuraToolsWizard;
+import com.muratools.mura.IniSetting;
 
 public class NewInstallWizard extends MuraToolsWizard {
 	
 	private InstallMuraPage page;
+	private InstallMuraSettingsPage settingsPage;
 	private String zipLocation = System.getProperty("java.io.tmpdir") + "/mura-latest.zip";
 	
 	public void addPages(){
 		page = new InstallMuraPage(getSelection());
 		addPage(page);
+		settingsPage = new InstallMuraSettingsPage(getSelection());
+		addPage(settingsPage);
 	}
 	
 	@Override
@@ -59,7 +64,13 @@ public class NewInstallWizard extends MuraToolsWizard {
 			}
 			zipLocation = page.fileField.getText();
 		}
+		// deploy the contents of the mura zip file
 		deployMuraZip();
+		
+		// edit the settings.ini.cfm file with collected data
+		setupIniFile();
+		
+		// refresh the container
 		refreshContainer();
 		return true;
 	}
@@ -74,9 +85,10 @@ public class NewInstallWizard extends MuraToolsWizard {
 					
 					try {
 						URL url = new URL("http://www.getmura.com/currentversion/?source=muratools");
-						int contentLength = url.openConnection().getContentLength();
+						// int contentLength = url.openConnection().getContentLength();
 						
-						monitor.beginTask("Downloading Mura...", (int)Math.floor((double)contentLength / (double)44640));
+						// monitor.beginTask("Downloading Mura...", (int)Math.floor((double)contentLength / (double)44640));
+						monitor.beginTask("Downloading Mura...", 5000); // 5000 is just the number of iterations I noticed it was taking to grab Mura, this is not very accurate
 						
 						InputStream reader = url.openStream();
 						
@@ -92,7 +104,6 @@ public class NewInstallWizard extends MuraToolsWizard {
 							totalBytesRead += bytesRead;
 							
 							tp++;
-							System.err.println(tp + " / " + Integer.toString((int)Math.ceil((double)contentLength / (double)44640)) + "[" + bytesRead + "]");
 							
 							monitor.worked(1);
 						}
@@ -127,6 +138,81 @@ public class NewInstallWizard extends MuraToolsWizard {
 	    in.close();
 	    out.close();
 	  }
+	
+	private void setupIniFile() {
+		String mode = "production";
+		
+		// create an arraylist to store all the collected settings. This will help us avoid threading issues when we pass the settings off to the builder that writes them to file.
+		ArrayList<IniSetting> settingsArrayList = new ArrayList<IniSetting>();
+		
+		// settings section
+		settingsArrayList.add(new IniSetting("settings", "appname", settingsPage.textAppName.getText()));
+		settingsArrayList.add(new IniSetting("settings", "appreloadkey", settingsPage.textReloadKey.getText()));
+		
+		// setup datasource
+		settingsArrayList.add(new IniSetting(mode, "datasource", settingsPage.textDatasourceName.getText()));
+		settingsArrayList.add(new IniSetting(mode,"dbtype", settingsPage.comboDatasourceType.getText().toLowerCase()));
+		settingsArrayList.add(new IniSetting(mode, "dbusername", settingsPage.textDatasourceUsername.getText()));
+		settingsArrayList.add(new IniSetting(mode, "dbpassword", settingsPage.textDatasourcePassword.getText()));
+		
+		// setup mail settings
+		settingsArrayList.add(new IniSetting(mode, "mailserverip", settingsPage.textMailServer.getText()));
+		settingsArrayList.add(new IniSetting(mode, "mailserversmtpport",settingsPage.spinnerMailSMTPPort.getText()));
+		settingsArrayList.add(new IniSetting(mode, "mailserverpopport", settingsPage.spinnerMailPOPPort.getText()));
+		settingsArrayList.add(new IniSetting(mode, "mailserverusername", settingsPage.textMailUsername.getText()));
+		settingsArrayList.add(new IniSetting(mode, "mailserverpassword", settingsPage.textMailPassword.getText()));
+		settingsArrayList.add(new IniSetting(mode, "mailservertls", settingsPage.btnUseTls.getSelection()));
+		settingsArrayList.add(new IniSetting(mode, "mailserverssl", settingsPage.btnUseSsl.getSelection()));
+		settingsArrayList.add(new IniSetting(mode, "usedefaultsmtpserver", settingsPage.btnUseDefaultSMTPServer.getSelection() ? 1 : 0));
+		
+		// other settings
+		settingsArrayList.add(new IniSetting(mode, "title", settingsPage.textTitle.getText()));
+		settingsArrayList.add(new IniSetting(mode, "adminemail", settingsPage.textAdminEmail.getText()));
+		settingsArrayList.add(new IniSetting(mode, "filedir", settingsPage.textFileDir.getText()));
+		settingsArrayList.add(new IniSetting(mode, "filestore", settingsPage.comboFileStore.getText()));
+		settingsArrayList.add(new IniSetting(mode, "filestoreaccessinfo", settingsPage.comboFileStore.getText() == "s3" ? settingsPage.textS3AccessKey.getText() + "^" + settingsPage.textS3SecretKey.getText() + "^" + settingsPage.textS3Bucket.getText() : ""));
+		settingsArrayList.add(new IniSetting(mode, "assetpath", settingsPage.textAssetPath.getText()));
+		settingsArrayList.add(new IniSetting(mode, "context", settingsPage.textContext.getText()));
+		settingsArrayList.add(new IniSetting(mode, "stub", settingsPage.comboStub.getText()));
+		settingsArrayList.add(new IniSetting(mode, "admindomain", settingsPage.textAdminDomain.getText()));
+		settingsArrayList.add(new IniSetting(mode, "adminssl", settingsPage.btnUseSslForAdmin.getSelection() ? 1 : 0));
+		settingsArrayList.add(new IniSetting(mode, "logevents", settingsPage.btnLogEvents.getSelection() ? 1 : 0));
+		settingsArrayList.add(new IniSetting(mode, "debuggingenabled", settingsPage.btnDebuggingEnabled.getSelection()));
+		settingsArrayList.add(new IniSetting(mode, "port", settingsPage.spinnerPort.getText()));
+		settingsArrayList.add(new IniSetting(mode, "sessionhistory", settingsPage.spinnerSessionHistory.getText()));
+		settingsArrayList.add(new IniSetting(mode, "sharableremotesessions", settingsPage.btnSharableRemoteSessions.getSelection() ? 1 : 0));
+		settingsArrayList.add(new IniSetting(mode, "dashboard", settingsPage.btnEnableDashboard.getSelection()));
+		settingsArrayList.add(new IniSetting(mode, "locale", settingsPage.comboLocale.getText()));
+		settingsArrayList.add(new IniSetting(mode, "ping", settingsPage.btnPing.getSelection() ? 1 : 0));
+		settingsArrayList.add(new IniSetting(mode, "enablemuratag", settingsPage.btnEnableMuraTag.getSelection()));
+		settingsArrayList.add(new IniSetting(mode, "proxyuser", settingsPage.textProxyUser.getText()));
+		settingsArrayList.add(new IniSetting(mode, "proxypassword", settingsPage.textProxyPassword.getText()));
+		settingsArrayList.add(new IniSetting(mode, "proxyserver", settingsPage.textProxyServer.getText()));
+		settingsArrayList.add(new IniSetting(mode, "proxyport", settingsPage.spinnerProxyPort.getText()));
+		settingsArrayList.add(new IniSetting(mode, "sortpermission", settingsPage.textSortPermission.getText()));
+		settingsArrayList.add(new IniSetting(mode, "imageinterpolation", settingsPage.comboImageInterpolation.getText()));
+		settingsArrayList.add(new IniSetting(mode, "clusterlist", settingsPage.textClusterList.getText()));
+		settingsArrayList.add(new IniSetting(mode, "siteidinurls", settingsPage.btnSiteIdInURLs.getSelection() ? 1 : 0));
+		settingsArrayList.add(new IniSetting(mode, "indexfileinurls", settingsPage.btnIndexInUrls.getSelection() ? 1 : 0));
+		settingsArrayList.add(new IniSetting(mode, "strictExtendedData", settingsPage.btnStrictExtendedData.getSelection() ? 1 : 0));
+		settingsArrayList.add(new IniSetting(mode, "loginStrikes", settingsPage.spinnerLoginStrikes.getText()));
+		settingsArrayList.add(new IniSetting(mode, "tempDir", settingsPage.textTempDir.getText()));
+		settingsArrayList.add(new IniSetting(mode, "purgeDrafts", settingsPage.btnPurgeDrafts.getSelection()));
+		settingsArrayList.add(new IniSetting(mode, "confirmSaveAsDraft", settingsPage.btnConfirmSaveAsDraft.getSelection()));
+		settingsArrayList.add(new IniSetting(mode, "notifyWithVersionLink", settingsPage.btnNotifyWithVersion.getSelection()));
+		settingsArrayList.add(new IniSetting(mode, "autoresetpasswords", settingsPage.btnAutoResetPasswords.getSelection()));
+		settingsArrayList.add(new IniSetting(mode, "htmleditortype", settingsPage.comboHTMLEditorType.getText()));
+		
+		ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
+		try {
+			NewInstallIniEditor editor = new NewInstallIniEditor(getTargetDirectory(), settingsArrayList);
+			dialog.run(true, true, editor);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private void deployMuraZip(){
 		ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
