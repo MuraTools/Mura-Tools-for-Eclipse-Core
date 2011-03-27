@@ -1,0 +1,7 @@
+com.muratools.eclipse
+com.muratools.eclipse.popup.actions
+com.muratools.eclipse.preferences
+com.muratools.eclipse.utils
+com.muratools.eclipse.wizard.buildPlugin
+com.muratools.eclipse.wizard.newInstall
+com.muratools.eclipse.wizard.newPlugin
