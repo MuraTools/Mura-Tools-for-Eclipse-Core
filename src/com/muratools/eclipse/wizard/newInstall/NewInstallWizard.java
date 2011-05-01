@@ -18,6 +18,7 @@ package com.muratools.eclipse.wizard.newInstall;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +26,7 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -137,6 +139,10 @@ public class NewInstallWizard extends MuraToolsWizard {
 					//monitor.beginTask("Unzipping Mura...", IProgressMonitor.UNKNOWN);
 					
 					try {
+						String tempDir = System.getProperty("java.io.tmpdir") + "/latest-mura-" + Long.toString(new Date().getTime());
+						// make the tempDir
+						new File(tempDir).mkdir();
+						
 						Enumeration entries;
 						ZipFile zipFile;
 
@@ -144,28 +150,34 @@ public class NewInstallWizard extends MuraToolsWizard {
 
 						entries = zipFile.entries();
 						
-						monitor.beginTask("Unzipping Mura...", zipFile.size());
+						monitor.beginTask("Unzipping Mura...", zipFile.size() * 2);
 						
+						// unzip the zip file to the temp directory
 						while(entries.hasMoreElements()) {
 							ZipEntry entry = (ZipEntry)entries.nextElement();
-
-							if (entry.getName().substring(0, 4).equals("www/")){
-								if(entry.isDirectory()) {
-									// Assume directories are stored parents first then children.
-									//System.err.println("Extracting directory: " + getTargetDirectory() + "/" + entry.getName().replace("www/", ""));
-									// This is not robust, just for demonstration purposes.
-									(new File(getTargetDirectory() + "/" + entry.getName().replace("www/", ""))).mkdir();
-									continue;
-								}
-
-								//System.err.println("Extracting file: " + getTargetDirectory() + "/" + entry.getName().replace("www/", ""));
-								copyInputStream(zipFile.getInputStream(entry),
-										new BufferedOutputStream(new FileOutputStream(getTargetDirectory() + "/" + entry.getName().replace("www/", ""))));
+							String fullEntryPath = tempDir + "/" + entry.getName();
+							
+							if (entry.isDirectory()){
+								(new File(fullEntryPath)).mkdir();
+								continue;
 							}
+							
+							copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(fullEntryPath)));
+							
 							monitor.worked(1);
 						}
 						zipFile.close();
-
+						
+						
+						// copy the files to the target directory
+						String sourceDir = tempDir;
+						File testDir = new File(tempDir + "/www");
+						if (testDir.exists() && testDir.isDirectory()){
+							sourceDir += "/www";
+						}
+						
+						copyDirectory(new File(sourceDir),new File(getTargetDirectory()),monitor);
+						
 					} catch (IOException e){
 						e.printStackTrace();
 					}
@@ -178,6 +190,36 @@ public class NewInstallWizard extends MuraToolsWizard {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void copyDirectory(File sourceLocation, File targetLocation, IProgressMonitor monitor)throws IOException {
+        System.out.println(sourceLocation.getName());
+        if (sourceLocation.isDirectory()) {
+            if (!targetLocation.exists()) {
+                targetLocation.mkdir();
+                monitor.worked(1);
+            }
+            
+            String[] children = sourceLocation.list();
+            for (int i=0; i<children.length; i++) {
+                copyDirectory(new File(sourceLocation, children[i]),
+                        new File(targetLocation, children[i]),monitor);
+            }
+        } else {
+            
+            InputStream in = new FileInputStream(sourceLocation);
+            OutputStream out = new FileOutputStream(targetLocation);
+            
+            // Copy the bits from instream to outstream
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.close();
+            monitor.worked(1);
+        }
 	}
 	
 }
