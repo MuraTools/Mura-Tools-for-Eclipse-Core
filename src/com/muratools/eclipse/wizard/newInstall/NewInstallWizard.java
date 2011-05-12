@@ -77,8 +77,7 @@ public class NewInstallWizard extends MuraToolsWizard {
 					try {
 						URL url = new URL("http://www.getmura.com/currentversion/?source=muratools");
 						int contentLength = url.openConnection().getContentLength();
-						
-						monitor.beginTask("Downloading Mura...", (int)Math.floor((double)contentLength / (double)44640));
+						monitor.beginTask("Downloading Mura...", contentLength);
 						
 						InputStream reader = url.openStream();
 						
@@ -96,7 +95,7 @@ public class NewInstallWizard extends MuraToolsWizard {
 							tp++;
 							System.err.println(tp + " / " + Integer.toString((int)Math.ceil((double)contentLength / (double)44640)) + "[" + bytesRead + "]");
 							
-							monitor.worked(1);
+							monitor.worked(bytesRead);
 						}
 						
 						writer.close();
