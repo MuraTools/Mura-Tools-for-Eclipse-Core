@@ -195,7 +195,8 @@ public class PluginConfigUtility {
 		}
 		
 		if (displayObjectsRoot != null){
-			if (displayObjectsRoot.getAttributeValue("location").length() > 0){
+			String location = displayObjectsRoot.getAttributeValue("location");
+			if (location != null && location.length() > 0){
 				pluginConfig.setDisplayObjectsLocation(displayObjectsRoot.getAttributeValue("location"));
 			} else {
 				pluginConfig.setDisplayObjectsLocation("global");
