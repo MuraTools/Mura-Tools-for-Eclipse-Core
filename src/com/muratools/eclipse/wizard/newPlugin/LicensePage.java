@@ -34,6 +34,9 @@ public class LicensePage extends WizardPage {
 	
 	
 	public License getLicense() {
+		if (license.getText().length() == 0){
+			license.setText(text.getText());
+		}
 		return license;
 	}
 
@@ -56,16 +59,6 @@ public class LicensePage extends WizardPage {
 		composite.setLayout(new FillLayout(SWT.VERTICAL));
 		
 		text = new Text(composite, SWT.BORDER | SWT.WRAP | SWT.MULTI);
-		text.addFocusListener(new FocusListener() {
-			
-			public void focusLost(FocusEvent e) {
-				license.setText(text.getText());
-			}
-			
-			public void focusGained(FocusEvent e) {
-				// nothing to do here for now
-			}
-		});
 	}
 
 }
