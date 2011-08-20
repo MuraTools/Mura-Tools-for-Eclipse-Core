@@ -78,17 +78,19 @@ public class NewThemeWizard extends MuraToolsWizard {
 		Enumeration entries = zipFile.entries();
 		while (entries.hasMoreElements()){
 			ZipEntry entry = (ZipEntry)entries.nextElement();
-			String fullEntryPath = getTargetDirectory() + "/" + entry.getName();
-			
-			if (entry.isDirectory()){
-				(new File(fullEntryPath)).mkdir();
-				continue;
-			}
-			
-			try {
-				copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(fullEntryPath)));
-			} catch (IOException e) {
-				e.printStackTrace();
+			if (!entry.getName().contains("__MACOSX")){
+				String fullEntryPath = getTargetDirectory() + "/" + entry.getName();
+				
+				if (entry.isDirectory()){
+					(new File(fullEntryPath)).mkdir();
+					continue;
+				}
+				
+				try {
+					copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(fullEntryPath)));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
