@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:muratools="http://muratools.com/MuraThemes/" targetNamespace="http://muratools.com/MuraThemes/">
+    <complexType name="MuraTheme">
+    	<attribute name="name" type="string" use="required"></attribute>
+    	<attribute name="fileName" type="string" use="required"></attribute>
+    	<attribute name="url" type="string" use="required"></attribute>
+    </complexType>
+
+    <complexType name="MuraThemeCollection">
+    	<sequence>
+    		<element name="theme" type="muratools:MuraTheme" maxOccurs="unbounded" minOccurs="1"></element>
+    	</sequence>
+    </complexType>
+
+    <element name="themeCollection" type="muratools:MuraThemeCollection"></element>
+
+    <element name="theme" type="muratools:MuraTheme"></element>
+</schema>

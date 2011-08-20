@@ -24,6 +24,14 @@
                tooltip="Build the Mura plugin and package it into a zip file">
          </action>
          <action
+               class="com.muratools.eclipse.popup.actions.NewTheme"
+               icon="src/com/muratools/eclipse/icon/theme_icon.png"
+               id="com.muratools.eclipse.newTheme"
+               label="New Mura Theme"
+               menubarPath="com.slantsoft.plugin.mura.menu1/group1"
+               tooltip="Create a new Mura CMS theme">
+         </action>
+         <action
                class="com.muratools.eclipse.popup.actions.NewMuraPlugin"
                icon="src/com/muratools/eclipse/icon/wordpress-plugin.png"
                id="com.slantsoft.plugin.mura.newPlugin"

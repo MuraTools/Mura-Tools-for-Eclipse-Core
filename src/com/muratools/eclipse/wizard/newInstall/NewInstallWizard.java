@@ -83,14 +83,12 @@ public class NewInstallWizard extends MuraToolsWizard {
 						
 						FileOutputStream writer = new FileOutputStream(zipLocation);
 						byte[] buffer = new byte[44640];
-						int totalBytesRead = 0;
 						int bytesRead = 0;
 						
 						int tp = 0;
 						while ((bytesRead = reader.read(buffer)) > 0){
 							writer.write(buffer, 0, bytesRead);
 							buffer = new byte[44640];
-							totalBytesRead += bytesRead;
 							
 							tp++;
 							System.err.println(tp + " / " + Integer.toString((int)Math.ceil((double)contentLength / (double)44640)) + "[" + bytesRead + "]");
