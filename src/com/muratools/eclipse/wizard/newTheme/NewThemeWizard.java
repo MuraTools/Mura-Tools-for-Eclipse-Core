@@ -44,6 +44,7 @@ import com.muratools.eclipse.MuraToolsWizard;
 public class NewThemeWizard extends MuraToolsWizard {
 	
 	private static String THEME_ZIPS_FOLDER_PATH = "static/themeZips";
+	private static MuraTheme EMPTY_THEME = new MuraTheme("Empty Theme Scaffold", "http://getmura.com/", "emptyscaffold.zip");
 	
 	private NewThemePage page;
 	
@@ -54,7 +55,17 @@ public class NewThemeWizard extends MuraToolsWizard {
 	
 	@Override
 	public boolean performFinish(){
-		MuraTheme theme = page.getSelectedMuraTheme();
+		String newThemePath = getTargetDirectory() + "/" + page.getThemeName();
+		File themeDir = new File(newThemePath);
+		if (!themeDir.exists() || (themeDir.exists() && !themeDir.isDirectory())){
+			themeDir.mkdir();
+		}
+		
+		MuraTheme theme = EMPTY_THEME;
+		
+		if (page.useExistingTheme() && page.getSelectedMuraTheme() != null){
+			theme = page.getSelectedMuraTheme();
+		}
 		
 		Bundle bundle = Platform.getBundle("com.muratools.eclipse");
 		File themeZip = null;
@@ -79,7 +90,7 @@ public class NewThemeWizard extends MuraToolsWizard {
 		while (entries.hasMoreElements()){
 			ZipEntry entry = (ZipEntry)entries.nextElement();
 			if (!entry.getName().contains("__MACOSX")){
-				String fullEntryPath = getTargetDirectory() + "/" + entry.getName();
+				String fullEntryPath = newThemePath + "/" + entry.getName();
 				
 				if (entry.isDirectory()){
 					(new File(fullEntryPath)).mkdir();

@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.GridData;
@@ -45,15 +46,24 @@ import org.osgi.framework.Bundle;
 
 import com.muratools.eclipse.MuraTheme;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jface.databinding.swt.SWTObservables;
 
 /**
  * @author steve
  *
  */
 public class NewThemePage extends WizardPage {
+	private DataBindingContext m_bindingContext;
 	
 	private Combo themeSelect;
 	private ArrayList<MuraTheme> themes;
+	private Text themeNameText;
+	private Button btnUseExistingTheme;
 	
 	
 	/**
@@ -73,17 +83,49 @@ public class NewThemePage extends WizardPage {
 		
 		Composite composite = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
+		layout.numColumns = 3;
 		composite.setLayout(layout);
 		layout.verticalSpacing = 9;
 		
+		Label lblThemeName = new Label(composite, SWT.NONE);
+		lblThemeName.setToolTipText("Theme name.  Spaces will be replaced with underscores and special characters will be removed.");
+		lblThemeName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblThemeName.setAlignment(SWT.RIGHT);
+		lblThemeName.setText("Theme Name");
+		
+		themeNameText = new Text(composite, SWT.BORDER);
+		themeNameText.setText("newTheme");
+		themeNameText.setToolTipText("Theme name.  Spaces will be replaced with underscores and special characters will be removed.");
+		themeNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		themeNameText.setFocus();
+		themeNameText.selectAll();
+		
+		Button btnRadioButton = new Button(composite, SWT.RADIO);
+		btnRadioButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+		btnRadioButton.setSelection(true);
+		btnRadioButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			}
+		});
+		btnRadioButton.setText("Empty Theme Scaffold");
+		new Label(composite, SWT.NONE);
+		
+		btnUseExistingTheme = new Button(composite, SWT.RADIO);
+		btnUseExistingTheme.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+		btnUseExistingTheme.setText("Use Existing Theme");
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		
 		Label lblNewLabel = new Label(composite, SWT.NONE);
+		lblNewLabel.setEnabled(false);
+		lblNewLabel.setAlignment(SWT.RIGHT);
 		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblNewLabel.setText("Select base theme");
 		
 		themeSelect = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
-		//gd_themeSelect.widthHint = 115;
-		GridData gd_themeSelect = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		themeSelect.setEnabled(false);
+		GridData gd_themeSelect = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_themeSelect.widthHint = 465;
 		themeSelect.setLayoutData(gd_themeSelect);
 		
@@ -92,6 +134,7 @@ public class NewThemePage extends WizardPage {
 			themeSelect.add(theme.getName());
 		}
 		
+		m_bindingContext = initDataBindings();
 		setControl(composite);
 	}
 	
@@ -148,5 +191,22 @@ public class NewThemePage extends WizardPage {
 		
 		return themes.get(selectedIndex);
 	}
+	
+	public String getThemeName(){
+		return themeNameText.getText().replaceAll("[^a-zA-Z0-9\\s]", "").replaceAll(" ", "_").replaceAll("[_]+", "_").replaceAll("[_]$", "");
+	}
+	
+	public boolean useExistingTheme(){
+		return btnUseExistingTheme.getSelection();
+	}
 
+	protected DataBindingContext initDataBindings() {
+		DataBindingContext bindingContext = new DataBindingContext();
+		//
+		IObservableValue themeSelectObserveEnabledObserveWidget = SWTObservables.observeEnabled(themeSelect);
+		IObservableValue btnUseExistingThemeObserveSelectionObserveWidget = SWTObservables.observeSelection(btnUseExistingTheme);
+		bindingContext.bindValue(themeSelectObserveEnabledObserveWidget, btnUseExistingThemeObserveSelectionObserveWidget, null, null);
+		//
+		return bindingContext;
+	}
 }
