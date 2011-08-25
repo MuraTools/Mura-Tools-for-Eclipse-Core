@@ -52,6 +52,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 
@@ -245,7 +246,7 @@ public class NewThemePage extends WizardPage {
 		DataBindingContext bindingContext = new DataBindingContext();
 		//
 		IObservableValue themeSelectObserveEnabledObserveWidget = SWTObservables.observeEnabled(themeSelect);
-		IObservableValue btnUseExistingThemeObserveSelectionObserveWidget = SWTObservables.observeSelection(btnUseExistingTheme);
+		IObservableValue btnUseExistingThemeObserveSelectionObserveWidget = PojoObservables.observeValue(btnUseExistingTheme, "selection");//SWTObservables.observeSelection(btnUseExistingTheme);
 		bindingContext.bindValue(themeSelectObserveEnabledObserveWidget, btnUseExistingThemeObserveSelectionObserveWidget, null, null);
 		//
 		return bindingContext;

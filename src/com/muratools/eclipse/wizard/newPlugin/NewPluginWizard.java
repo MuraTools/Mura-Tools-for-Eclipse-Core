@@ -22,6 +22,7 @@ import com.muratools.eclipse.PluginConfig;
 
 public class NewPluginWizard extends MuraToolsWizard {
 	
+	private PluginTypePage typePage;
 	private InformationPage informationPage;
 	private SettingsPage settingsPage;
 	private DisplayObjectsPage displayObjectsPage;
@@ -30,6 +31,8 @@ public class NewPluginWizard extends MuraToolsWizard {
 	private LicensePage licensePage;
 	
 	public void addPages(){
+		typePage = new PluginTypePage("Plugin Type");
+		addPage(typePage);
 		informationPage = new InformationPage("General Plugin Information");
 		addPage(informationPage);
 		settingsPage = new SettingsPage("Plugin Settings Fields");
