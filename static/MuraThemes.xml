@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <muratools:themeCollection xmlns:muratools="http://muratools.com/MuraThemes/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://muratools.com/MuraThemes/MuraThemes.xsd ">
+  <theme url="http://getmura.com/marketplace/apps/960-grid-system/" name="960 Grid System" fileName="960-grid.zip"/>
+  <theme url="http://getmura.com/marketplace/apps/blueprint-css/" name="Blueprint CSS" fileName="blueprint.zip"/>
   <theme url="http://getmura.com/marketplace/apps/cosumnes/" name="Cosumnes" fileName="cosumnes.zip"/>
   <theme url="http://getmura.com/marketplace/apps/html-5-boilerplate/" name="HTML5 Boilerplate" fileName="html5boilerplate.zip"/>
-  <theme url="http://getmura.com/marketplace/apps/blueprint-css/" name="Blueprint CSS" fileName="blueprint.zip"/>
   <theme url="http://getmura.com/marketplace/apps/merced-site-bundle/" name="Merced" fileName="merced.zip"/>
   <theme url="http://getmura.com/marketplace/apps/merced-site-bundle/" name="Merced HTML5" fileName="merced-html5.zip"/>
   <theme url="http://getmura.com/marketplace/apps/merced-lite/" name="Merced Lite" fileName="merced-lite.zip"/>
-  <theme url="http://getmura.com/marketplace/apps/960-grid-system/" name="960 Grid System" fileName="960-grid.zip"/>
 </muratools:themeCollection>
