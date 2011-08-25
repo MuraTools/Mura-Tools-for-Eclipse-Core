@@ -47,6 +47,8 @@ import org.osgi.framework.Bundle;
 import com.muratools.eclipse.MuraTheme;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -86,6 +88,7 @@ public class NewThemePage extends WizardPage {
 		layout.numColumns = 3;
 		composite.setLayout(layout);
 		layout.verticalSpacing = 9;
+		setControl(composite);
 		
 		Label lblThemeName = new Label(composite, SWT.NONE);
 		lblThemeName.setToolTipText("Theme name.  Spaces will be replaced with underscores and special characters will be removed.");
@@ -94,9 +97,13 @@ public class NewThemePage extends WizardPage {
 		lblThemeName.setText("Theme Name");
 		
 		themeNameText = new Text(composite, SWT.BORDER);
-		themeNameText.setText("newTheme");
 		themeNameText.setToolTipText("Theme name.  Spaces will be replaced with underscores and special characters will be removed.");
 		themeNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		themeNameText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				checkFields();
+			}
+		});
 		themeNameText.setFocus();
 		themeNameText.selectAll();
 		
@@ -106,6 +113,8 @@ public class NewThemePage extends WizardPage {
 		btnRadioButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				themeSelect.deselectAll();
+				checkFields();
 			}
 		});
 		btnRadioButton.setText("Empty Theme Scaffold");
@@ -114,6 +123,12 @@ public class NewThemePage extends WizardPage {
 		btnUseExistingTheme = new Button(composite, SWT.RADIO);
 		btnUseExistingTheme.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		btnUseExistingTheme.setText("Use Existing Theme");
+		btnUseExistingTheme.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				checkFields();
+			}
+		});
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		
@@ -134,8 +149,14 @@ public class NewThemePage extends WizardPage {
 			themeSelect.add(theme.getName());
 		}
 		
+		themeSelect.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				checkFields();
+			}
+		});
+		
 		m_bindingContext = initDataBindings();
-		setControl(composite);
+		checkFields();
 	}
 	
 	private ArrayList<MuraTheme> loadThemes(){
@@ -199,7 +220,27 @@ public class NewThemePage extends WizardPage {
 	public boolean useExistingTheme(){
 		return btnUseExistingTheme.getSelection();
 	}
-
+	
+	private void checkFields(){
+		boolean canComplete = false;
+		
+		if (getThemeName().length() > 0){
+			canComplete = true;
+			
+			if (btnUseExistingTheme.getSelection()){
+				if (getSelectedMuraTheme() != null){
+					canComplete = true;
+				} else {
+					canComplete = false;
+				}
+			} else {
+				canComplete = true;
+			}
+		}
+		
+		setPageComplete(canComplete);
+	}
+	
 	protected DataBindingContext initDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
 		//
